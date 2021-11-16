@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 // import { Button } from 'antd'
-import Button from './components/Button'
 
 const AppStyle = styled.div`
     margin: 120px auto;
@@ -13,7 +13,6 @@ const AppStyle = styled.div`
         padding: 48px;
         display: flex;
         flex-flow: row nowrap;
-        /* justify-content: space-between; */
         align-content: center;
         align-items: flex-start;
     }
@@ -28,21 +27,13 @@ const theme = {
 }
 
 export function App() {
-    const handleClick = e => console.log(e.target.offsetLeft, e.target.tagName)
+    const handleClick = e => {
+        console.log(e.target.offsetLeft, e.target.tagName)
+    }
     return (
         <ThemeProvider theme={theme}>
             <AppStyle>
-                <div className="container">
-                    <Button type="primary" onClick={e => handleClick(e)}>
-                        Primary Button
-                    </Button>
-                    {/* <AntButton>Primary Button</AntButton> */}
-                    {/* <Button type="primary">Primary Button</Button>
-                <Button>Default Button</Button>
-                <Button type="dashed">Dashed Button</Button>
-                <Button type="text">Text Button</Button> */}
-                    {/* <Button type="link">Link Button</Button> */}
-                </div>
+                <div className="container"></div>
             </AppStyle>
         </ThemeProvider>
     )
