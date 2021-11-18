@@ -70,8 +70,9 @@ const ButtonStyle = styled.button.attrs(props => ({
         border-radius: 32px;
     }
     &.small {
+        font-size: 12px;
         height: 24px;
-        padding: 2 7px;
+        padding: 2px 7px;
     }
     &.small.round {
         border-radius: 24px;
@@ -84,6 +85,10 @@ const ButtonStyle = styled.button.attrs(props => ({
         color: #fff;
         background-image: none;
         background-color: ${props => props.theme.default.main};
+    }
+    &.ant-btn-primary:hover {
+        border: 1px solid ${props => props.theme.default.hover};
+        background-color: ${props => props.theme.default.hover};
     }
     &.ant-btn-ghost {
         color: #fff;
@@ -168,6 +173,7 @@ const ButtonStyle = styled.button.attrs(props => ({
 `
 export default class Button extends Component {
     static propTypes = {
+        btnTransform: PropTypes.bool, //按钮动画
         block: PropTypes.bool, //将按钮宽度调整为其父宽度的选项
         danger: PropTypes.bool, //设置危险按钮
         disabled: PropTypes.bool, //按钮失效状态
@@ -185,6 +191,7 @@ export default class Button extends Component {
     }
 
     static defaultProps = {
+        btnTransform: true,
         block: false,
         danger: false,
         disabled: false,
@@ -213,6 +220,9 @@ export default class Button extends Component {
     }
 
     componentDidMount() {
+        if (!this.props.btnTransform) {
+            return
+        }
         this.btnRef.current.addEventListener('click', this.animatingNode)
     }
 
