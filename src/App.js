@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import { Switch } from 'antd'
+// import { Switch } from 'antd'
 import Button from './components/Button'
 import Drawer from './components/Drawer'
+import Switch from './components/Switch'
 
 const AppStyle = styled.div`
     /* margin: 120px auto; */
@@ -32,7 +33,6 @@ const theme = {
 
 export function App() {
     const [visible, setVisible] = useState(false)
-    let dom = null
     const showDrawer = () => {
         setVisible(true)
     }
@@ -70,7 +70,17 @@ export function App() {
                     <Button type="primary" onClick={showDrawer}>
                         open
                     </Button>
-                    <Switch />
+                    <Switch
+                        size="small"
+                        className="aaa"
+                        // checked={false}
+                        // defaultChecked={false}
+                        checkedChildren={'on'}
+                        unCheckedChildren={'off'}
+                        onChange={checked => console.log(checked, 'change')}
+                        onClick={checked => console.log(checked, 'click')}
+                    />
+                    {/* <Switch /> */}
                 </div>
             </AppStyle>
         </ThemeProvider>
