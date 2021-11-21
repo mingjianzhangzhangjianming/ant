@@ -7,8 +7,8 @@ import Switch from './components/Switch'
 
 const AppStyle = styled.div`
     /* margin: 120px auto; */
-    font-family: -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial, noto sans, sans-serif,
-        apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji; //antd 组件库字体
+    font-family: -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial,
+        noto sans, sans-serif, apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji; //antd 组件库字体
     max-width: 1200px;
     width: 1200px;
     border: 1px dashed #a7a7a7;
@@ -27,8 +27,8 @@ const theme = {
     default: {
         main: '#1890ff',
         hover: '#40a9ff',
-        active: '#096dd9'
-    }
+        active: '#096dd9',
+    },
 }
 
 export function App() {
@@ -72,7 +72,8 @@ export function App() {
                     </Button>
                     <Switch
                         size="small"
-                        className="aaa"
+                        // loading
+                        // disabled={true}
                         // checked={false}
                         // defaultChecked={false}
                         checkedChildren={'on'}
