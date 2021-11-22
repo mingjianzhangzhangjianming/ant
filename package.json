@@ -15,7 +15,7 @@
         "web-vitals": "^1.0.1"
     },
     "scripts": {
-        "start": "set PORT=8000 && craco start FAST_REFRESH=true",
+        "start": "set PORT=80 && craco start FAST_REFRESH=true",
         "build": "set GENERATE_SOURCEMAP=true && craco build",
         "test": "craco test"
     },

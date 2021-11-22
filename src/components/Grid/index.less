@@ -1,0 +1,57 @@
+.row {
+    display: flex;
+    flex-flow: row wrap;
+}
+.row-nowrap {
+    flex-wrap: nowrap;
+}
+.row-top {
+    align-items: flex-start;
+}
+
+.row-middle {
+    align-items: center;
+}
+
+.row-start {
+    justify-content: flex-start;
+}
+
+.row-end {
+    justify-content: flex-end;
+}
+.row-center {
+    justify-content: center;
+}
+.row-space-around {
+    justify-content: space-around;
+}
+
+.row-space-between {
+    justify-content: space-between;
+}
+
+.row-bottom {
+    align-items: flex-end;
+}
+
+.col {
+    max-width: 100%;
+    min-height: 1px;
+}
+.loop (@n) when (@n >= 0) {
+    .col-@{n} {
+        display: block;
+        flex: 0 0 100% * (@n / 24);
+        max-width: 100% * (@n / 24);
+    }
+    .loop(@n - 1);
+}
+.loop(24);
+
+// xs	屏幕 < 576px 响应式栅格，可为栅格数或一个包含其他属性的对象	number | object	-
+// sm	屏幕 ≥ 576px 响应式栅格，可为栅格数或一个包含其他属性的对象	number | object	-
+// md	屏幕 ≥ 768px 响应式栅格，可为栅格数或一个包含其他属性的对象	number | object	-
+// lg	屏幕 ≥ 992px 响应式栅格，可为栅格数或一个包含其他属性的对象	number | object	-
+// xl	屏幕 ≥ 1200px 响应式栅格，可为栅格数或一个包含其他属性的对象	number | object	-
+// xxl	屏幕 ≥ 1600px 响应式栅格，可为栅格数或一个包含其他属性的对象	number | object

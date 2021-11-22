@@ -232,7 +232,7 @@ export default class Drawer extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props.getContainer())
+        /* console.log(this.props.getContainer()) */
         document.body.appendChild(this.el)
     }
 
