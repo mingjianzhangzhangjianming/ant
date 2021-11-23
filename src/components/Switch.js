@@ -26,7 +26,7 @@ const loadingCircle = keyframes`
 
 const SwitchWrap = styled.button.attrs(props => ({
     role: 'switch',
-    disabled: props.disabled,
+    disabled: props.disabled
 }))`
     margin: 0;
     padding: 0;
@@ -40,6 +40,7 @@ const SwitchWrap = styled.button.attrs(props => ({
     align-items: center;
     flex-flow: nowrap row;
     justify-content: flex-end;
+    flex: 0 0 auto;
     cursor: pointer;
     user-select: none;
     border-radius: 100px;
@@ -187,7 +188,7 @@ export default class Switch extends Component {
         size: PropTypes.oneOf(['small', 'default']),
         unCheckedChildren: PropTypes.element,
         onChange: PropTypes.func,
-        onClick: PropTypes.func,
+        onClick: PropTypes.func
     }
 
     static defaultProps = {
@@ -195,16 +196,13 @@ export default class Switch extends Component {
         defaultChecked: false,
         disabled: false,
         loading: false,
-        size: 'default',
+        size: 'default'
     }
 
     constructor(props) {
         super(props)
         this.state = {
-            isChecked:
-                typeof this.props.checked === 'undefined'
-                    ? this.props.defaultChecked
-                    : this.props.checked,
+            isChecked: typeof this.props.checked === 'undefined' ? this.props.defaultChecked : this.props.checked
         }
     }
     componentDidUpdate(nextProps) {
@@ -217,10 +215,7 @@ export default class Switch extends Component {
         const { onClick, onChange } = this.props
         this.setState(
             prevState => ({
-                isChecked:
-                    typeof this.props.checked === 'undefined'
-                        ? !prevState.isChecked
-                        : prevState.isChecked,
+                isChecked: typeof this.props.checked === 'undefined' ? !prevState.isChecked : prevState.isChecked
             }),
             () => {
                 if (onChange && typeof onChange === 'function') {
@@ -234,20 +229,15 @@ export default class Switch extends Component {
     }
 
     render() {
-        const { size, className, loading, disabled, checkedChildren, unCheckedChildren } =
-            this.props
+        const { size, className, loading, disabled, checkedChildren, unCheckedChildren } = this.props
         const { isChecked } = this.state
         const switchClass = classNames(className, {
             'switch-small': size === 'small',
             'switch-checked': isChecked,
-            'switch-disabled': loading || disabled,
+            'switch-disabled': loading || disabled
         })
         return (
-            <SwitchWrap
-                className={switchClass}
-                onClick={this.handleSwitchClick}
-                disabled={loading || disabled}
-            >
+            <SwitchWrap className={switchClass} onClick={this.handleSwitchClick} disabled={loading || disabled}>
                 <div className="switch-handle">
                     {loading && (
                         <span aria-label="loading" className="anticon">
@@ -265,9 +255,7 @@ export default class Switch extends Component {
                         </span>
                     )}
                 </div>
-                <span className="switch-inner">
-                    {isChecked ? checkedChildren : unCheckedChildren}
-                </span>
+                <span className="switch-inner">{isChecked ? checkedChildren : unCheckedChildren}</span>
             </SwitchWrap>
         )
     }
