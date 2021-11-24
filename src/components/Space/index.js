@@ -9,7 +9,7 @@ const spaceSize = {
     large: 24
 }
 
-export class Space extends Component {
+export default class Space extends Component {
     static propTypes = {
         align: PropTypes.oneOf(['start', 'end', 'center', 'baseline']),
         direction: PropTypes.oneOf(['vertical', 'horizontal']),

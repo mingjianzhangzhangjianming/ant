@@ -13,28 +13,34 @@ const screenSize = [
 ]
 const debounce = (fn, wait = 200, immediate = false) => {
     let timer
-    console.log(immediate)
     return function () {
         if (timer) {
             clearTimeout(timer)
         }
-        // console.log(timer)
         if (immediate) {
-            return (timer = setTimeout(() => fn.apply(this, arguments), wait))
+            if (!timer) {
+                fn.apply(this, arguments)
+                timer = true
+            }
+            timer = setTimeout(() => {
+                fn.apply(this, arguments)
+                timer = null
+            }, wait)
+        } else {
+            timer = setTimeout(() => fn.apply(this, arguments), wait)
         }
-        timer = setTimeout(() => fn.apply(this, arguments), wait)
     }
 }
 
-const throttle = (fn, delay = 500) => {
-    let lastDate = 0
-    return function () {
-        if (Date.now() - lastDate > delay) {
-            fn.apply(this, arguments)
-            lastDate = Date.now()
-        }
-    }
-}
+// const throttle = (fn, delay = 500) => {
+//     let lastDate = 0
+//     return function () {
+//         if (Date.now() - lastDate > delay) {
+//             fn.apply(this, arguments)
+//             lastDate = Date.now()
+//         }
+//     }
+// }
 export class Row extends Component {
     static propTypes = {
         align: PropTypes.oneOf(['top', 'middle', 'bottom']),
@@ -92,7 +98,6 @@ export class Row extends Component {
     matcheScreen = screenW => screenSize.find((item, index) => screenW < item.size)?.span || 'xxl'
 
     componentDidMount() {
-        console.log(this.resize)
         window.addEventListener('resize', this.resize)
     }
 

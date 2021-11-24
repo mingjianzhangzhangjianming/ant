@@ -1,8 +1,9 @@
 import React from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-// import { Row, Col, Grid, Tag, Space } from 'antd'
+// import { Input as AntInput } from 'antd'
 import { Row, Col } from './components/Grid'
-import { Space } from './components/Space'
+import Space from './components/Space'
+import Input from './components/Input'
 // import Button from './components/Button'
 // import Drawer from './components/Drawer'
 import Switch from './components/Switch'
@@ -34,6 +35,7 @@ const theme = {
 }
 
 export function App() {
+    const [val, setVal] = React.useState(10101)
     // const [visible, setVisible] = useState(false)
     // const showDrawer = () => {
     //     setVisible(true)
@@ -73,10 +75,10 @@ export function App() {
                 <div>
                     <Row gutter={[{ lg: 16, xxl: 20 }, 12]} style={{ height: 200 }} align="middle">
                         {/* <Col span={4}>col-1</Col> */}
-                        <Col span={4} md={{ push: 20 }}>
+                        <Col span={4} xxl={{ push: 20 }}>
                             col-2
                         </Col>
-                        <Col span={12} md={{ pull: 4 }}>
+                        <Col span={12} xxl={{ pull: 4 }}>
                             col-3
                         </Col>
                         {/* <Col span={4}>col-4</Col> */}
@@ -87,6 +89,38 @@ export function App() {
                     <Switch />
                     <Switch checkedChildren={'onsdfsdfdsfdgdfgdfgfd'} unCheckedChildren={'offdfsdfdsfdgdfgdfgfd'} />
                     <Switch size="small" checkedChildren={'开'} unCheckedChildren={'关'} />
+                    {/* <AntInput
+                        size="large"
+                        maxLength={10}
+                        value={val}
+                        defaultValue="~"
+                        placeholder="size sm"
+                        onChange={e => {
+                            setVal(e.target.value)
+                        }}
+                        onPressEnter={e => console.log(e.target.value)}
+                    /> */}
+                    <Input
+                        // addonAfter={<h1>565</h1>}
+                        // addonBefore={<h1>565</h1>}
+                        allowClear={null}
+                        prefix={<h2>头</h2>}
+                        suffix={<h3>尾</h3>}
+                        style={{ width: 240 }}
+                        size="large"
+                        maxLength={10}
+                        value={val}
+                        defaultValue="~"
+                        placeholder="size sm"
+                        onChange={e => {
+                            setVal(e.target.value)
+                            console.dir(e.target)
+                        }}
+                        onPressEnter={e => console.log(e.target.value)}
+                    />
+                    {/* <Input.Password suffix={<h2>5454</h2>} placeholder="input password" />
+                    <Input.TextArea suffix={<h2>5454</h2>} placeholder="input password" />
+                    <Input.Search suffix={<h2>5454</h2>} placeholder="input password" /> */}
                 </Space>
             </AppStyle>
         </ThemeProvider>
