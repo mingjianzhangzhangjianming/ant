@@ -56,6 +56,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
     min-width: 0;
     padding: 4px 11px;
@@ -67,7 +68,15 @@
     border: 1px solid #d9d9d9;
     border-radius: 2px;
     transition: all 0.3s;
-    display: inline-flex;
+    flex: 1;
+    &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    &:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
     & > .input,
     & > .input:focus,
     & > .input:hover {
@@ -76,7 +85,22 @@
         outline: none;
         box-shadow: none;
     }
-    &:not(.ant-input-affix-wrapper-disabled):hover {
+    &.input-affix-wrapper-focus:not(.input-affix-wrapper-bordered) {
+        border-color: #40a9ff;
+        box-shadow: 0 0 0 2px #1890ff33;
+    }
+    &.input-affix-wrapper-disabled {
+        color: rgba(0, 0, 0, 0.25);
+        background-color: #f5f5f5;
+        border-color: #d9d9d9;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: 1;
+    }
+    &.input-affix-wrapper-bordered {
+        border: none;
+    }
+    &:not(.input-affix-wrapper-disabled):hover {
         border-color: #40a9ff;
         z-index: 1;
     }
@@ -91,5 +115,61 @@
     &.input-affix-wrapper-small {
         padding: 0 7px;
         font-size: 14px;
+    }
+    & > .input-prefix {
+        margin-right: 4px;
+    }
+    & > .allow-clear-suffix {
+        color: rgba(0, 0, 0, 0.25);
+        font-size: 12px;
+        cursor: pointer;
+        transition: color 0.3s;
+        vertical-align: middle;
+        line-height: 0;
+        &:hover {
+            color: #00000073;
+        }
+    }
+    & > .input-suffix {
+        margin-left: 4px;
+    }
+}
+
+.input-group-wraper {
+    display: inline-block;
+    text-align: start;
+    vertical-align: top;
+    &.input-group-wraper-bordered .input-flex-wraper > .input-group-addon {
+        border: none;
+    }
+    & > .input-flex-wraper {
+        width: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        .input-group-addon:first-child {
+            border-right: none;
+            border-radius: 2px 0 0 2px;
+        }
+        .input-group-addon:last-child {
+            border-left: none;
+            border-radius: 0 2px 2px 0;
+        }
+        .input-group-addon {
+            width: auto;
+            position: relative;
+            padding: 0 11px;
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: normal;
+            font-size: 14px;
+            text-align: center;
+            background-color: #fafafa;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     }
 }
