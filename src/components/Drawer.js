@@ -5,15 +5,6 @@ import styled from 'styled-components'
 import classNames from 'classnames'
 import Button from './Button'
 
-// const drawerFadeIn = keyframes`
-//     from{
-//         opacity: 1;
-//     }
-//     to{
-//         opacity: 0;
-//     }
-// `
-
 const scale = {
     default: 378,
     large: 736
