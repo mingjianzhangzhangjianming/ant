@@ -1,5 +1,6 @@
-import { Component, useState, useEffect, useCallback, useRef } from 'react'
+import { Component, useState, useEffect, useCallback, useRef, useLayoutEffect, memo } from 'react'
 import { Button, Input } from 'antd'
+// import { useInterval } from 'ahooks'
 
 class A extends Component {
     state = {
@@ -52,38 +53,113 @@ const useSynchroState = initState => {
     ]
 }
 
+//定时器
+const useInterval = (fn, delay, option) => {
+    const immediate = option && option.immediate
+    const fnRef = useRef()
+    fnRef.current = fn //fn 必须通过current绑定
+    console.log('children hook render')
+    useEffect(() => {
+        if (delay === undefined || delay === null || typeof fnRef.current !== 'function') return
+        if (immediate) fnRef.current()
+        let timer = setInterval(() => {
+            fnRef.current()
+        }, delay)
+        return () => {
+            clearInterval(timer)
+        }
+    }, [delay])
+}
+
+const HookChildren = memo(() => {
+    console.log('Hookchildren ->>> render')
+    return (
+        <>
+            <h4>chiildren 组件</h4>
+        </>
+    )
+})
+
 const Hook = () => {
-    const Interval = useRef()
-    const [count, setCount] = useState(0)
+    let timer = null
+    let num = 0
+    const [count, setCount] = useState(100)
+    const [delay, setDelay] = useState(500)
+    const countRef = useRef(0)
     const handleClick = () => {
         setCount(c => c + 1)
     }
 
-    const callback = () => {
-        const timer = setInterval(() => {
-            setCount(c => c + 1)
-            console.log(timer)
-        }, 1000)
-    }
-    // const callback = useCallback(() => {
-    //     let timer = setInterval(() => {
-    //         setCount(c => c + 1)
-    //         console.log(timer)
-    //     }, 1000)
-    // }, [])
-
-    useEffect(() => {
-        callback()
-    }, [])
-
-    console.log('render')
+    // useInterval(
+    //     () => {
+    //         setCount(count)
+    //     },
+    //     delay,
+    //     { immediate: true }
+    // )
+    // useLayoutEffect(() => {
+    //     console.log(
+    //         'useLayoutEffect >>>> 在渲染前同步调用 页面不闪烁 但严重阻塞浏览器渲染进程等待该副作用执行完成后才触发渲染更新 一般不推荐使用'
+    //     )
+    //     if (count === 0) {
+    //         for (;;) {
+    //             num++
+    //             console.log(num)
+    //             if (num == 8000) {
+    //                 break
+    //             }
+    //         }
+    //         setCount(Date.now())
+    //     }
+    // }, [count])
+    // useEffect(() => {
+    //     console.log(count, 'useEffect 页面可能闪烁两次 setCount 更新一次渲染一次 是在渲染后异步调用的 不会阻塞渲染线程')
+    //     if (count === 0) {
+    //         for (;;) {
+    //             num++
+    //             console.log(num)
+    //             if (num == 8000) {
+    //                 break
+    //             }
+    //         }
+    //         setCount(Date.now())
+    //     }
+    // })
 
     return (
         <>
             {/* <A /> */}
-            <Input value={count} style={{ width: 240, marginBottom: 24 }} />
+            {/* <Input value={count} style={{ width: 240, marginBottom: 24 }} /> */}
             <br />
-            <Button type="dashed" children="add count" onClick={handleClick} />
+            {count}
+            <HookChildren />
+            <Button style={{ marginRight: 36 }} type="primary" children="add count" onClick={handleClick} />
+            <Button
+                style={{ marginRight: 36 }}
+                type="primary"
+                children="setInterval  + 500"
+                onClick={() => {
+                    setDelay(d => d + 500)
+                }}
+            />
+            <Button
+                style={{ marginRight: 36 }}
+                type="primary"
+                children="setInterval + reset"
+                onClick={() => {
+                    setDelay(500)
+                }}
+            />
+            <Button
+                style={{ marginRight: 36 }}
+                type="primary"
+                children="setInterval stop"
+                onClick={() => {
+                    setDelay(null)
+                }}
+            />
+            <br />
+            <Button style={{ margin: 36 }} type="primary" children="setInterval stop" onClick={() => setCount(0)} />
         </>
     )
 }
