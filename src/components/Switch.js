@@ -26,7 +26,8 @@ const loadingCircle = keyframes`
 
 const SwitchWrap = styled.button.attrs(props => ({
     role: 'switch',
-    disabled: props.disabled
+    disabled: props.disabled,
+    style: props.style
 }))`
     margin: 0;
     padding: 0;
@@ -70,7 +71,7 @@ const SwitchWrap = styled.button.attrs(props => ({
     &.switch-checked::after {
         content: '';
         position: absolute;
-        z-index: -1;
+        /* z-index: -1; */
         border-radius: inherit;
         background-color: inherit;
         inset: 0;
@@ -95,26 +96,6 @@ const SwitchWrap = styled.button.attrs(props => ({
         left: -8px;
         right: 0;
     }
-
-    &.switch-checked {
-        background: #1890ff;
-        justify-content: flex-start;
-        .switch-handle {
-            left: calc(100% - 20px);
-        }
-        .switch-inner {
-            margin-left: 6px;
-        }
-    }
-    &.switch-small.switch-checked {
-        .switch-handle {
-            left: calc(100% - 14px);
-        }
-        .switch-inner {
-            margin-left: 2px;
-        }
-    }
-
     & > .switch-handle {
         position: absolute;
         left: 2px;
@@ -166,16 +147,41 @@ const SwitchWrap = styled.button.attrs(props => ({
             transition: all 0.2s ease-in-out;
         }
     }
-    & > .switch-inner {
+    & .switch-inner {
         font-size: 12px;
         color: #fff;
-        margin-right: 6px;
     }
-    &.switch-small > .switch-inner {
-        font-size: 12px;
-        color: #fff;
-        margin-right: 2px;
-        transform: scale(0.6);
+    &.switch-checked {
+        background: #1890ff;
+        justify-content: flex-start;
+        .switch-handle {
+            left: calc(100% - 20px);
+        }
+        .switch-inner {
+            margin-left: 6px;
+            margin-right: 22px;
+        }
+        &.switch-small {
+            .switch-handle {
+                left: calc(100% - 14px);
+            }
+            .switch-inner {
+                margin-left: 6px;
+                margin-right: 16px;
+            }
+        }
+    }
+    &:not(.switch-checked) {
+        .switch-inner {
+            margin-left: 22px;
+            margin-right: 6px;
+        }
+        &.switch-small {
+            .switch-inner {
+                margin-left: 16px;
+                margin-right: 6px;
+            }
+        }
     }
 `
 export default class Switch extends Component {
@@ -205,6 +211,7 @@ export default class Switch extends Component {
             isChecked: typeof this.props.checked === 'undefined' ? this.props.defaultChecked : this.props.checked
         }
     }
+
     componentDidUpdate(nextProps) {
         if (nextProps.checked !== this.props.checked) {
             this.setState({ isChecked: this.props.checked })
@@ -229,15 +236,21 @@ export default class Switch extends Component {
     }
 
     render() {
-        const { size, className, loading, disabled, checkedChildren, unCheckedChildren } = this.props
+        const { size, className, style, loading, disabled, checkedChildren, unCheckedChildren } = this.props
         const { isChecked } = this.state
         const switchClass = classNames(className, {
             'switch-small': size === 'small',
             'switch-checked': isChecked,
             'switch-disabled': loading || disabled
         })
+
         return (
-            <SwitchWrap className={switchClass} onClick={this.handleSwitchClick} disabled={loading || disabled}>
+            <SwitchWrap
+                style={style}
+                className={switchClass}
+                onClick={this.handleSwitchClick}
+                disabled={loading || disabled}
+            >
                 <div className="switch-handle">
                     {loading && (
                         <span aria-label="loading" className="anticon">

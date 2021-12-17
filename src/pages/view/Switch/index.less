@@ -1,0 +1,50 @@
+.switch-container {
+    ol {
+        padding: 0 20px;
+        list-style-type: circle;
+        li {
+            font-size: 14px;
+            list-style: 1.5;
+            margin: 12px 0;
+        }
+    }
+    .code-container {
+        display: inline-block;
+        width: 100%;
+        margin: 0 0 16px;
+        border: 1px solid #f0f0f0;
+        border-radius: 2px;
+        padding: 16px;
+        transition: all 0.2s;
+        & > .code-view {
+            padding: 48px 0;
+        }
+        & > .code-edit {
+            .copy-show-btn {
+                margin: 12px 0;
+                display: flex;
+                align-items: center;
+                justify-content: end;
+                .code-expand-icon {
+                    margin-left: 12px;
+                }
+                & > span {
+                    cursor: pointer;
+                    img {
+                        width: 16px;
+                    }
+                }
+            }
+        }
+        .code-mirror-item {
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 16px;
+            & > .CodeMirror {
+                padding: 12px 0;
+                border-radius: 6px;
+                box-sizing: border-box;
+            }
+        }
+    }
+}

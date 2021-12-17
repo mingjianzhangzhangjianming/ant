@@ -199,6 +199,7 @@ export default class Drawer extends Component {
         zIndex: 1000,
         size: 'default',
         keyboard: true,
+        push: 180,
         extra: (
             <>
                 <Button type="text" size="small" style={{ marginRight: 12 }}>
@@ -216,15 +217,11 @@ export default class Drawer extends Component {
         }
         this.el = document.createElement('div')
         this.el.tabIndex = -1
+        document.body.appendChild(this.el)
     }
 
     handleKeyDown = e => {
         console.log(4545)
-    }
-
-    componentDidMount() {
-        /* console.log(this.props.getContainer()) */
-        document.body.appendChild(this.el)
     }
 
     componentDidUpdate(prevProps) {
