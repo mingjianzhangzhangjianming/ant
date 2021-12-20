@@ -46,6 +46,10 @@ const siderMenuList = [
             {
                 path: 'switch',
                 title: 'Switch  开关'
+            },
+            {
+                path: 'form',
+                title: 'Form  表单'
             }
         ]
     },

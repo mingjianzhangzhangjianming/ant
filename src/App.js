@@ -4,6 +4,7 @@ import { ThemeProvider } from 'styled-components'
 import PageLayout from 'pages/layout'
 import Switch from 'pages/view/Switch'
 import Drawer from 'pages/view/Drawer'
+import Form from 'pages/view/Form'
 
 const theme = {
     default: {
@@ -29,8 +30,9 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<PageLayout />}>
                         <Route index caseSensitive path="button" element={<Tit />} />
-                        <Route index caseSensitive path="switch" element={<Switch />} />
-                        <Route index caseSensitive path="drawer" element={<Drawer />} />
+                        <Route path="switch" element={<Switch />} />
+                        <Route path="drawer" element={<Drawer />} />
+                        <Route path="form" element={<Form />} />
                     </Route>
                 </Routes>
             </HashRouter>
