@@ -20,6 +20,7 @@ const Demo = () => {
             component={'form'}
             // layout="horizontal | vertical | inline"
             layout="horizontal"
+            labelAlign="left"
             labelCol={{
                 span: 8
             }}
@@ -45,7 +46,6 @@ const Demo = () => {
             >
                 <Input />
             </Form.Item>
-
             {/* <Form.Item
                 label="Password"
                 name="password"
@@ -61,6 +61,9 @@ const Demo = () => {
 
             <Form.Item
                 name="remember"
+                // getValueProps={value => ({
+                //     checked: value
+                // })}
                 valuePropName="checked"
                 wrapperCol={{
                     offset: 8,
@@ -80,9 +83,6 @@ const Demo = () => {
                     Submit
                 </Button>
             </Form.Item>
-            <Button type="primary" htmlType="submit">
-                Submit
-            </Button>
         </Form>
     )
 }
@@ -110,7 +110,48 @@ export default function DrawerWrapExhibi() {
                 <Row gutter={24}>
                     <Col lg={{ span: 24 }} md={{ span: 24 }}>
                         <Demo />
-                        <AntForm></AntForm>
+                        <AntForm>
+                            <AntForm.Item
+                                name="username"
+                                initialValue={12}
+                                valuePropName="value"
+                                label="username"
+                                labelCol={{
+                                    offset: 3,
+                                    span: 5
+                                }}
+                                wrapperCol={{
+                                    span: 16
+                                }}
+                            >
+                                <Input />
+                            </AntForm.Item>
+                            {/* <AntForm.Item
+                                name="tenant"
+                                initialValue={999}
+                                valuePropName="value"
+                                label="username"
+                                labelCol={{
+                                    offset: 3,
+                                    span: 5
+                                }}
+                                wrapperCol={{
+                                    span: 16
+                                }}
+                            >
+                                <Input />
+                            </AntForm.Item> */}
+                            <AntForm.Item
+                                wrapperCol={{
+                                    offset: 8,
+                                    span: 16
+                                }}
+                            >
+                                <Button type="primary" htmlType="submit">
+                                    Submit
+                                </Button>
+                            </AntForm.Item>
+                        </AntForm>
                     </Col>
                 </Row>
             </section>
