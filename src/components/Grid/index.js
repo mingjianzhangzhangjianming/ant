@@ -122,7 +122,7 @@ export class Row extends Component {
                         return (
                             <div
                                 className={rowClass}
-                                style={{ ...style, margin: `0 -${offset[0] / 2}px`, rowGap: offset[1] }}
+                                style={{ margin: `0 -${offset[0] / 2}px`, ...style, rowGap: offset[1] }}
                             >
                                 {children}
                             </div>

@@ -1,115 +1,150 @@
-import { Component, createContext, createElement, cloneElement } from 'react'
+import React, {
+    Component,
+    createContext,
+    createElement,
+    cloneElement,
+    useContext,
+    useState,
+    useCallback,
+    useEffect,
+    memo,
+    useMemo,
+    Fragment
+} from 'react'
 import { Row, Col } from 'components/Grid'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import './index.less'
+import { Button } from 'antd'
 
 const FormContext = createContext('')
 
-class FormItem extends Component {
-    static displayName = 'Form.Item'
-    static propsType = {}
-    static defaultProps = {
-        // colon	配合 label 属性使用，表示是否显示 label 后面的冒号	boolean	true
-        // dependencies	设置依赖字段，说明见下	NamePath[]	-
-        // extra	额外的提示信息，和 help 类似，当需要错误信息和提示文案同时出现时，可以使用这个。	ReactNode	-
-        // getValueFromEvent	设置如何将 event 的值转换成字段值	(..args: any[]) => any	-
-        // getValueProps	为子元素添加额外的属性	(value: any) => any	-	4.2.0
-        // hasFeedback	配合 validateStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用	boolean	false
-        // help	提示信息，如不设置，则会根据校验规则自动生成	ReactNode	-
-        // hidden	是否隐藏字段（依然会收集和校验字段）	boolean	false	4.4.0
-        // htmlFor	设置子元素 label htmlFor 属性	string	-
-        // initialValue	设置子元素默认值，如果与 Form 的 initialValues 冲突则以 Form 为准	string	-	4.2.0
-        // labelAlign	标签文本对齐方式	left | right	right
-        // labelCol	label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}。你可以通过 Form 的 labelCol 进行统一设置，，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准	object	-
-        // messageVariables	默认验证字段的信息	Record<string, string>	-	4.7.0
-        // name	字段名，支持数组	NamePath	-
-        // normalize	组件获取值后进行转换，再放入 Form 中。不支持异步	(value, prevValue, prevValues) => any	-
-        // noStyle	为 true 时不带样式，作为纯字段控件使用	boolean	false
-        // preserve	当字段被删除时保留字段值	boolean	true	4.4.0
-        // required	必填样式设置。如不设置，则会根据校验规则自动生成	boolean	false
-        // rules	校验规则，设置字段的校验逻辑。点击此处查看示例	Rule[]	-
-        // shouldUpdate	自定义字段更新逻辑，说明见下	boolean | (prevValue, curValue) => boolean	false
-        // tooltip	配置提示信息	ReactNode | TooltipProps & { icon: ReactNode }	-	4.7.0
-        // trigger	设置收集字段值变更的时机。点击此处查看示例	string	onChange
-        // validateFirst	当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验	boolean | parallel	false	parallel: 4.5.0
-        // validateStatus	校验状态，如不设置，则会根据校验规则自动生成，可选：'success' 'warning' 'error' 'validating'	string	-
-        // validateTrigger	设置字段校验的时机	string | string[]	onChange
-        // valuePropName	子节点的值的属性，如 Switch 的是 'checked'。该属性为 getValueProps 的封装，自定义 getValueProps 后会失效	string	value
-        // wrapperCol	需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。你可以通过 Form 的 wrapperCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准	object
-    }
+//事件触发事件
+const dispatChvalis = (fn, vaild) =>
+    Object.assign({}, ...(Array.isArray(vaild) ? vaild.map(i => ({ [i]: fn })) : [{ [vaild]: fn }]))
 
-    static contextType = FormContext
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            valueProp: 'value'
-        }
-    }
-
-    static getDerivedStateFromProps(props, _) {
-        const { name, valuePropName } = props
-        if (name && valuePropName) {
-            return {
-                valueProp: valuePropName
-            }
-        }
-
-        return null
-    }
-
-    handleChange = e => {
-        this.context.dispatchFormInitialValues(this.props.name, e.target.value)
-    }
-
-    componentDidMount() {
-        //初始化initialValues
-        const { name, initialValue } = this.props
-        if (initialValue !== undefined) {
-            this.context.dispatchFormInitialValues(name, initialValue)
-        }
-    }
-
-    render() {
-        const { valueProp } = this.state
-        const { name, children, label, initialValue } = this.props
-        const { initialValues } = this.context
-        // console.log(this.props, this.context)
-        console.log('render', name)
-        const [labelCol, wrapperCol] = [
-            this.props.labelCol || this.context.labelCol,
-            this.props.wrapperCol || this.context.wrapperCol
-        ]
-        const elProps = name
-            ? {
-                  [valueProp]: initialValues[name]
-              }
-            : {}
-
-        console.log(elProps)
-
-        return (
-            <Row>
-                {label && (
-                    <Col {...labelCol}>
-                        <label className={classNames({ 'ant-form-item-required': this.context.requiredMark })}>
-                            {label}
-                        </label>
-                    </Col>
-                )}
-                <Col {...wrapperCol}>
-                    <div className="ant-form-item-control-input">
-                        {cloneElement(children, { ...elProps, onChange: this.handleChange }, null)}
-                    </div>
+const FormItem = memo(props => {
+    const { label, labelCol, wrapperCol, requiredMark, children, elProps, dispatchFormValue, FormItemvalid } = props
+    console.log('form-item ------> render')
+    return (
+        <Row style={{ margin: 24 }}>
+            {label && (
+                <Col {...labelCol}>
+                    <label className={classNames({ 'ant-form-item-required': requiredMark })}>{label}</label>
                 </Col>
-            </Row>
-        )
-    }
+            )}
+            <Col {...wrapperCol}>
+                <div className="ant-form-item-control-input">
+                    {cloneElement(children, {
+                        ...elProps,
+                        ...FormItemvalid,
+                        onChange: e => dispatchFormValue(e)
+                    })}
+                </div>
+            </Col>
+        </Row>
+    )
+})
+
+//包裹组件 避免context变更多次渲染不应渲染的FormItem组件
+const eventType = {
+    value: e => e.target.value,
+    checked: e => (e?.target?.checked === undefined ? e : e.target.checked)
 }
 
-export default class F extends Component {
-    static Item = FormItem
+const FormItemWarp = props => {
+    const [valueProp, setValueProp] = useState('value')
+    const {
+        requiredMark,
+        labelCol: contextLabelCol,
+        wrapperCol: contextWrapperCol,
+        initialValues,
+        validateTrigger: contextValidateTrigger
+    } = useContext(FormContext)
+    const { name, children, valuePropName, label, dispatchforminitialvalues, initialValue, validateTrigger } = props
+    const [labelCol, wrapperCol] = [props.labelCol || contextLabelCol, props.wrapperCol || contextWrapperCol]
+    const dispatchFormValue = useCallback(
+        value =>
+            new Promise((resolve, _) => {
+                const result = eventType[valuePropName](value)
+                dispatchforminitialvalues(name, result)
+                resolve(result)
+            }).then(val => setState(val)),
+        [valuePropName]
+    )
+
+    const [state, setState] = useState(initialValue || initialValues?.[name])
+
+    //  初始化initialValues
+    useEffect(() => {
+        if (initialValue !== undefined) {
+            dispatchforminitialvalues(name, initialValue)
+        }
+    }, [])
+
+    const elProps = useMemo(
+        () =>
+            !name
+                ? {}
+                : {
+                      [valuePropName || valueProp]: state
+                  },
+        [name, valuePropName, valueProp, state]
+    )
+    const validList = validateTrigger || validateTrigger?.length ? validateTrigger : contextValidateTrigger
+    const FormItemvalid = useMemo(() => dispatChvalis(() => console.log(123), validList), [validList])
+    // console.log(FormItemvalid)
+    // console.log(elProps, state, initialValues)
+    const formItemProps = {
+        label,
+        requiredMark,
+        dispatchFormValue,
+        labelCol,
+        wrapperCol,
+        elProps,
+        FormItemvalid
+    }
+    return (
+        <>
+            <FormItem {...formItemProps}>{children}</FormItem>
+        </>
+    )
+}
+
+FormItemWarp.propsType = {}
+FormItemWarp.displayName = 'Form.Item'
+FormItemWarp.defaultProps = {
+    // colon	配合 label 属性使用，表示是否显示 label 后面的冒号	boolean	true
+    // dependencies	设置依赖字段，说明见下	NamePath[]	-
+    // extra	额外的提示信息，和 help 类似，当需要错误信息和提示文案同时出现时，可以使用这个。	ReactNode	-
+    // getValueFromEvent	设置如何将 event 的值转换成字段值	(..args: any[]) => any	-
+    // getValueProps	为子元素添加额外的属性	(value: any) => any	-	4.2.0
+    // hasFeedback	配合 validateStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用	boolean	false
+    // help	提示信息，如不设置，则会根据校验规则自动生成	ReactNode	-
+    // hidden	是否隐藏字段（依然会收集和校验字段）	boolean	false	4.4.0
+    // htmlFor	设置子元素 label htmlFor 属性	string	-
+    // initialValue	设置子元素默认值，如果与 Form 的 initialValues 冲突则以 Form 为准	string	-	4.2.0
+    // labelAlign	标签文本对齐方式	left | right	right
+    // labelCol	label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}。你可以通过 Form 的 labelCol 进行统一设置，，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准	object	-
+    // messageVariables	默认验证字段的信息	Record<string, string>	-	4.7.0
+    // name	字段名，支持数组	NamePath	-
+    // normalize	组件获取值后进行转换，再放入 Form 中。不支持异步	(value, prevValue, prevValues) => any	-
+    // noStyle	为 true 时不带样式，作为纯字段控件使用	boolean	false
+    // preserve	当字段被删除时保留字段值	boolean	true	4.4.0
+    // required	必填样式设置。如不设置，则会根据校验规则自动生成	boolean	false
+    // rules	校验规则，设置字段的校验逻辑。点击此处查看示例	Rule[]	-
+    // shouldUpdate	自定义字段更新逻辑，说明见下	boolean | (prevValue, curValue) => boolean	false
+    // tooltip	配置提示信息	ReactNode | TooltipProps & { icon: ReactNode }	-	4.7.0
+    // trigger	设置收集字段值变更的时机。点击此处查看示例	string	onChange
+    // validateFirst	当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验	boolean | parallel	false	parallel: 4.5.0
+    // validateStatus	校验状态，如不设置，则会根据校验规则自动生成，可选：'success' 'warning' 'error' 'validating'	string	-
+    validateTrigger: ['onClick', 'onChange', 'onBlur'], //设置字段校验的时机	string | string[]	onChange
+    valuePropName: 'value' //	子节点的值的属性，如 Switch 的是 'checked'。该属性为 getValueProps 的封装，自定义 getValueProps 后会失效	string	value
+    // wrapperCol	需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。你可以通过 Form 的 wrapperCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准	object
+}
+
+export default class Form extends Component {
+    static Item = FormItemWarp
     static displayName = 'Form'
     static propsType = {
         colon: PropTypes.bool, //配置 Form.Item 的 colon 的默认值。表示是否显示 label 后面的冒号 (只有在属性 layout 为 horizontal 时有效)	boolean	true
@@ -157,8 +192,8 @@ export default class F extends Component {
         onFieldsChange: () => {
             console.log('')
         }, //字段更新时触发回调事件	function(changedFields, allFields)
-        onFinish: () => {
-            console.log('')
+        onFinish: value => {
+            console.log('Success', value)
         }, //提交表单且数据验证成功后回调事件	function(values)
         onFinishFailed: () => {
             console.log('')
@@ -171,22 +206,21 @@ export default class F extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            initialValues: props.initialValues
+            ...props.initialValues
         }
     }
 
-    // static getDerivedStateFromProps(props, _) {
-    //     return {
-    //         initialValues: props.initialValues
-    //     }
-    // }
-
-    dispatchFormInitialValues = (name, value) => {
+    dispatchforminitialvalues = (name, value) => {
         if (!name) {
             return
         }
-        const initialValues = { ...this.state.initialValues, [name]: value }
-        this.setState({ initialValues: initialValues })
+        console.log(this.state, 'initialValues >>>')
+        this.setState({ [name]: value })
+    }
+
+    onSubmit = e => {
+        const { onFinish } = this.props
+        onFinish(this.state)
     }
 
     render() {
@@ -198,8 +232,8 @@ export default class F extends Component {
             fields,
             form,
             initialValues,
-            labelAlign,
             labelCol,
+            labelAlign,
             layout,
             requiredMark,
             preserve,
@@ -215,32 +249,33 @@ export default class F extends Component {
             children,
             ...otherProps
         } = this.props
+        const { dispatchforminitialvalues, onSubmit } = this
         const formClassName = classNames(
             'ant-form',
             { [`ant-form-${size}`]: size !== 'middle' },
             { [`ant-form-${layout}`]: layout },
             { 'ant-form-item-label-left': labelAlign }
         )
-        // const validatelists = Array.isArray(validateTrigger)
-        //     ? validateTrigger.map(i => ({ [i]: () => {} }))
-        //     : [{ [validateTrigger]: () => {} }]
-        // const dispatChvalis = Object.assign({}, ...validatelists)
-        // console.log(dispatChvalis)
-        // console.log(children)
         // console.log(this.props)
-        console.log('render >>>>>lll')
         return (
             <FormContext.Provider
                 value={{
                     ...this.props,
-                    initialValues: this.state.initialValues,
-                    dispatchFormInitialValues: (name, value) => this.dispatchFormInitialValues(name, value)
+                    initialValues: this.state
                 }}
             >
-                {component
-                    ? createElement(component, { id: id || name, className: formClassName, ...otherProps }, children)
-                    : children}
-                {this.state.initialValues.username}
+                {createElement(
+                    component || Fragment,
+                    component
+                        ? {
+                              id: id || name,
+                              className: formClassName,
+                              ...otherProps,
+                              onSubmit: onSubmit
+                          }
+                        : {},
+                    React.Children.map(children, child => cloneElement(child, { dispatchforminitialvalues }))
+                )}
             </FormContext.Provider>
         )
     }

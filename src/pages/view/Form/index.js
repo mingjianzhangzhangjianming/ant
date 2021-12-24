@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Typography, Row, Col } from 'antd'
 import './index.less'
 import AntForm from 'components/Form'
-import { Form, Input, Button, Checkbox } from 'antd'
+import { Form, Input, Button, Checkbox, Switch } from 'antd'
 
 const Demo = () => {
     const onFinish = values => {
@@ -46,18 +46,6 @@ const Demo = () => {
             >
                 <Input />
             </Form.Item>
-            {/* <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                    {
-                        required: true,
-                        message: 'Please input your password!'
-                    }
-                ]}
-            >
-                <Input.Password />
-            </Form.Item> */}
 
             <Form.Item
                 name="remember"
@@ -113,7 +101,22 @@ export default function DrawerWrapExhibi() {
                         <AntForm>
                             <AntForm.Item
                                 name="username"
-                                initialValue={12}
+                                valuePropName="value"
+                                label="username"
+                                initialValue={999}
+                                labelCol={{
+                                    offset: 3,
+                                    span: 5
+                                }}
+                                wrapperCol={{
+                                    span: 16
+                                }}
+                            >
+                                <Input />
+                            </AntForm.Item>
+                            <AntForm.Item
+                                name="tenant"
+                                initialValue={888}
                                 valuePropName="value"
                                 label="username"
                                 labelCol={{
@@ -126,21 +129,41 @@ export default function DrawerWrapExhibi() {
                             >
                                 <Input />
                             </AntForm.Item>
-                            {/* <AntForm.Item
-                                name="tenant"
-                                initialValue={999}
-                                valuePropName="value"
-                                label="username"
+                            <AntForm.Item
                                 labelCol={{
                                     offset: 3,
                                     span: 5
                                 }}
                                 wrapperCol={{
+                                    offset: 8,
+                                    span: 16
+                                }}
+                                label="Password"
+                                name="password"
+                                valuePropName="checked"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please input your password!'
+                                    }
+                                ]}
+                            >
+                                <Switch />
+                            </AntForm.Item>
+                            <AntForm.Item
+                                name="remember"
+                                // getValueProps={value => ({
+                                //     checked: value
+                                // })}
+                                initialValue={true}
+                                valuePropName="checked"
+                                wrapperCol={{
+                                    offset: 8,
                                     span: 16
                                 }}
                             >
-                                <Input />
-                            </AntForm.Item> */}
+                                <Checkbox>Remember me</Checkbox>
+                            </AntForm.Item>
                             <AntForm.Item
                                 wrapperCol={{
                                     offset: 8,
