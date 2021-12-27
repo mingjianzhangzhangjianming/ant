@@ -107,22 +107,31 @@ export class Row extends Component {
 
     render() {
         const { screenWidth } = this.state
-        const { style, align, gutter, justify, wrap, children } = this.props
+        const { style, className, align, gutter, justify, wrap, children } = this.props
         const offset = this.computeOffset(gutter, screenWidth)
-        const rowClass = classNames('row', {
-            [`row-${align}`]: align,
-            [`row-${justify}`]: justify,
-            'row-nowrap': !wrap
-        })
+        const rowClass = classNames(
+            'row',
+            {
+                [`row-${align}`]: align,
+                [`row-${justify}`]: justify,
+                'row-nowrap': !wrap
+            },
+            className
+        )
         return (
             <RowContext.Provider value={{ screen: screenWidth, offset }}>
                 <RowContext.Consumer>
-                    {({ screen, offset }) => {
+                    {({ screen, offset: [marg, gap] }) => {
                         // console.log(screen, offset, `0 ${offset[0]}`)
                         return (
                             <div
                                 className={rowClass}
-                                style={{ margin: `0 -${offset[0] / 2}px`, ...style, rowGap: offset[1] }}
+                                style={{
+                                    marginLeft: marg / 2,
+                                    marginRight: marg / 2,
+                                    rowGap: gap,
+                                    ...style
+                                }}
                             >
                                 {children}
                             </div>

@@ -33,6 +33,7 @@ const Demo = () => {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             autoComplete="off"
+            validateTrigger={['onBlur']}
         >
             <Form.Item
                 label="Username"
@@ -111,6 +112,12 @@ export default function DrawerWrapExhibi() {
                                 wrapperCol={{
                                     span: 16
                                 }}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please input your password!'
+                                    }
+                                ]}
                             >
                                 <Input />
                             </AntForm.Item>
@@ -126,6 +133,16 @@ export default function DrawerWrapExhibi() {
                                 wrapperCol={{
                                     span: 16
                                 }}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please input your password!'
+                                    },
+                                    {
+                                        max: 10,
+                                        message: '最长不能超过十个字符!'
+                                    }
+                                ]}
                             >
                                 <Input />
                             </AntForm.Item>
@@ -141,12 +158,6 @@ export default function DrawerWrapExhibi() {
                                 label="Password"
                                 name="password"
                                 valuePropName="checked"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please input your password!'
-                                    }
-                                ]}
                             >
                                 <Switch />
                             </AntForm.Item>

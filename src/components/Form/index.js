@@ -19,15 +19,20 @@ import { Button } from 'antd'
 
 const FormContext = createContext('')
 
-//事件触发事件
+//表单验证触发事件
 const dispatChvalis = (fn, vaild) =>
     Object.assign({}, ...(Array.isArray(vaild) ? vaild.map(i => ({ [i]: fn })) : [{ [vaild]: fn }]))
 
 const FormItem = memo(props => {
+    const [hasError, setHasError] = useState(false)
     const { label, labelCol, wrapperCol, requiredMark, children, elProps, dispatchFormValue, FormItemvalid } = props
     console.log('form-item ------> render')
+    const rowClass = classNames('ant-form-item', {
+        'ant-form-item-with-help': hasError,
+        'ant-form-item-has-error': hasError
+    })
     return (
-        <Row style={{ margin: 24 }}>
+        <Row className={rowClass} gutter={24}>
             {label && (
                 <Col {...labelCol}>
                     <label className={classNames({ 'ant-form-item-required': requiredMark })}>{label}</label>
@@ -41,17 +46,31 @@ const FormItem = memo(props => {
                         onChange: e => dispatchFormValue(e)
                     })}
                 </div>
+                {hasError && (
+                    <div className="ant-form-item-explain ant-form-item-explain-connected">
+                        <div role="alert" className="ant-form-item-explain-error">
+                            Please input your username!
+                        </div>
+                    </div>
+                )}
             </Col>
         </Row>
     )
 })
 
-//包裹组件 避免context变更多次渲染不应渲染的FormItem组件
 const eventType = {
     value: e => e.target.value,
     checked: e => (e?.target?.checked === undefined ? e : e.target.checked)
 }
 
+const handleRule = {
+    required: val => {
+        console.log(val === '', val, 'val9999')
+    },
+    max: (val, maxLength) => val.length >= maxLength
+}
+
+//包裹组件 避免context变更多次渲染不应渲染的FormItem组件
 const FormItemWarp = props => {
     const [valueProp, setValueProp] = useState('value')
     const {
@@ -61,7 +80,8 @@ const FormItemWarp = props => {
         initialValues,
         validateTrigger: contextValidateTrigger
     } = useContext(FormContext)
-    const { name, children, valuePropName, label, dispatchforminitialvalues, initialValue, validateTrigger } = props
+    const { name, children, valuePropName, label, dispatchforminitialvalues, initialValue, validateTrigger, rules } =
+        props
     const [labelCol, wrapperCol] = [props.labelCol || contextLabelCol, props.wrapperCol || contextWrapperCol]
     const dispatchFormValue = useCallback(
         value =>
@@ -91,10 +111,31 @@ const FormItemWarp = props => {
                   },
         [name, valuePropName, valueProp, state]
     )
+
+    //验证列表
+    const rulelist = rules?.map(rule => {
+        const [fnName, msg] = Object.keys(rule)
+        return [handleRule?.[fnName], rule?.[msg]]
+    })
+    console.log(rulelist, '->>>>>>>rules')
+
+    //注入触发时机
     const validList = validateTrigger || validateTrigger?.length ? validateTrigger : contextValidateTrigger
-    const FormItemvalid = useMemo(() => dispatChvalis(() => console.log(123), validList), [validList])
+    const FormItemvalid = useMemo(
+        () =>
+            dispatChvalis(() => {
+                rulelist.map(r => {
+                    // const [val] = Object.values(elProps)
+                    // r[0](val)
+                    return r
+                })
+            }, validList),
+        [validList]
+    )
+
     // console.log(FormItemvalid)
     // console.log(elProps, state, initialValues)
+
     const formItemProps = {
         label,
         requiredMark,
@@ -138,7 +179,7 @@ FormItemWarp.defaultProps = {
     // trigger	设置收集字段值变更的时机。点击此处查看示例	string	onChange
     // validateFirst	当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验	boolean | parallel	false	parallel: 4.5.0
     // validateStatus	校验状态，如不设置，则会根据校验规则自动生成，可选：'success' 'warning' 'error' 'validating'	string	-
-    validateTrigger: ['onClick', 'onChange', 'onBlur'], //设置字段校验的时机	string | string[]	onChange
+    validateTrigger: ['onChange', 'onBlur'], //设置字段校验的时机	string | string[]	onChange
     valuePropName: 'value' //	子节点的值的属性，如 Switch 的是 'checked'。该属性为 getValueProps 的封装，自定义 getValueProps 后会失效	string	value
     // wrapperCol	需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。你可以通过 Form 的 wrapperCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准	object
 }
