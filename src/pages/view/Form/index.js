@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Typography, Row, Col } from 'antd'
 import './index.less'
 import AntForm from 'components/Form'
-import { Form, Input, Button, Checkbox, Switch } from 'antd'
+import { Form, Button, Input, Checkbox, Switch } from 'antd'
 
 const Demo = () => {
     const onFinish = values => {
@@ -118,6 +118,7 @@ export default function DrawerWrapExhibi() {
                                         message: 'Please input your password!'
                                     }
                                 ]}
+                                validateTrigger={['onInput', 'onClick']}
                             >
                                 <Input />
                             </AntForm.Item>
