@@ -20,24 +20,71 @@ import { Button, Input } from 'antd'
 
 const FormContext = createContext('')
 
-//表单验证触发事件
-const dispatChvalis = val => (fn, vaild) =>
-    Object.assign(
-        {},
-        ...(Array.isArray(vaild) ? vaild.map(i => ({ [i]: () => fn(val) })) : [{ [vaild]: () => fn(val) }])
-    )
+const eventType = {
+    value: e => e.target.value,
+    checked: e => (e?.target?.checked === undefined ? e : e.target.checked)
+}
+
+const handleRule = {
+    required: val => val === '',
+    max: (val, maxLength) => val.length >= maxLength
+}
 
 const FormItem = memo(props => {
-    //结束动画执行标识
+    const [hasError, setHasError] = useState(false)
     const errRef = useRef(null)
+    //触发验证标识
+    const [isTrigger, setTrigger] = useState(false)
+    //结束动画执行标识
     const [isAnimaing, setIsAnimaing] = useState(false)
-    const { label, labelCol, wrapperCol, requiredMark, children, elProps, dispatchFormValue, FormItemvalid, hasError } =
-        props
+    const [formItemvalid, setFormItemvalid] = useState({})
+    const {
+        label,
+        labelCol,
+        wrapperCol,
+        requiredMark,
+        children,
+        elProps,
+        validList,
+        rulelist,
+        dispatchFormValue
+        // FormItemvalid,
+    } = props
     // console.log('form-item ------> render', isAnimaing)
     const rowClass = classNames('ant-form-item', {
         'ant-form-item-with-help': hasError,
         'ant-form-item-has-error': hasError
     })
+
+    //表单验证触发事件
+    const dispatChvalis = (vaild, fn) => {
+        const Fn = isTrigger ? () => {} : fn
+        if (!isTrigger) {
+            setTrigger(true)
+        }
+        return new Promise(resolve => {
+            resolve(Object.assign({}, ...(Array.isArray(vaild) ? vaild.map(i => ({ [i]: Fn })) : [{ [vaild]: Fn }])))
+        })
+    }
+
+    useEffect(() => {
+        console.log('validList>>>>>>', validList)
+
+        const [val] = Object.values(elProps)
+        // console.log(val, 'elProps')
+        const triggerVaildEvent = v => {
+            const result = rulelist?.some(rule => {
+                const [fn, msg] = rule
+                console.log(v, fn)
+                return fn(v)
+            })
+            setHasError(result)
+        }
+
+        dispatChvalis(validList, triggerVaildEvent(val)).then(res => {
+            setFormItemvalid(res)
+        })
+    }, [elProps])
 
     useEffect(() => {
         if (hasError && errRef.current) {
@@ -60,7 +107,7 @@ const FormItem = memo(props => {
                     {cloneElement(children, {
                         ...elProps,
                         onChange: e => dispatchFormValue(e),
-                        ...FormItemvalid
+                        ...formItemvalid
                     })}
                 </div>
                 {(hasError || isAnimaing) && (
@@ -78,21 +125,9 @@ const FormItem = memo(props => {
     )
 })
 
-const eventType = {
-    value: e => e.target.value,
-    checked: e => (e?.target?.checked === undefined ? e : e.target.checked)
-}
-
-const handleRule = {
-    required: val => val === '',
-    max: (val, maxLength) => val.length >= maxLength
-}
-
 //包裹组件 避免context变更多次渲染不应渲染的FormItem组件
 const FormItemWarp = props => {
     const [valueProp, setValueProp] = useState('value')
-    const [hasError, setHasError] = useState(false)
-    const [formItemvalid, setFormItemvalid] = useState({})
     const {
         requiredMark,
         labelCol: contextLabelCol,
@@ -137,30 +172,9 @@ const FormItemWarp = props => {
         const [fnName, msg] = Object.keys(rule)
         return [handleRule?.[fnName], rule?.[msg]]
     })
-
+    // console.log(rulelist, 'rulelist')
     //注入触发时机
-    const validList = validateTrigger || validateTrigger?.length ? validateTrigger : contextValidateTrigger
-    const callFn = useCallback(
-        v => {
-            const hasSucces = rulelist?.some(rule => {
-                const [fn, msg] = rule
-                console.log(v, 148, initialValues?.[name])
-                return true
-            })
-            setHasError(hasSucces)
-            console.log(hasSucces, v)
-        },
-        [elProps]
-    )
-
-    useEffect(() => {
-        // const [val] = Object.values(elProps)
-        // console.log(val, 'elProps', callFn)
-        const FormItemvalid = dispatChvalis(elProps)(callFn, validList)
-        setFormItemvalid(FormItemvalid)
-    }, [elProps])
-
-    // console.log(elProps, state, initialValues)
+    const validList = validateTrigger?.length ? validateTrigger : contextValidateTrigger
 
     const formItemProps = {
         label,
@@ -169,14 +183,13 @@ const FormItemWarp = props => {
         labelCol,
         wrapperCol,
         elProps,
-        hasError
+        validList,
+        rulelist
     }
 
     return (
         <>
-            <FormItem {...formItemProps} FormItemvalid={formItemvalid}>
-                {children}
-            </FormItem>
+            <FormItem {...formItemProps}>{children}</FormItem>
         </>
     )
 }
@@ -208,7 +221,7 @@ FormItemWarp.defaultProps = {
     // trigger	设置收集字段值变更的时机。点击此处查看示例	string	onChange
     // validateFirst	当某一规则校验不通过时，是否停止剩下的规则的校验。设置 parallel 时会并行校验	boolean | parallel	false	parallel: 4.5.0
     // validateStatus	校验状态，如不设置，则会根据校验规则自动生成，可选：'success' 'warning' 'error' 'validating'	string	-
-    validateTrigger: ['onInput'], //设置字段校验的时机	string | string[]	onChange
+    validateTrigger: [], //设置字段校验的时机	string | string[]	onChange
     valuePropName: 'value' //	子节点的值的属性，如 Switch 的是 'checked'。该属性为 getValueProps 的封装，自定义 getValueProps 后会失效	string	value
     // wrapperCol	需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。你可以通过 Form 的 wrapperCol 进行统一设置，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准	object
 }
@@ -257,7 +270,7 @@ export default class Form extends Component {
         validateMessages: {
             required: "'${name}' 是必选字段"
         }, //	验证提示模板，说明见下	ValidateMessages
-        validateTrigger: ['onClick', 'onChange', 'onBlur'], //统一设置字段触发验证的时机
+        validateTrigger: [], //统一设置字段触发验证的时机
         wrapperCol: { span: 3, offset: 12 }, //	需要为输入控件设置布局样式时，使用该属性，用法同 labelCol,
         onFieldsChange: () => {
             console.log('')

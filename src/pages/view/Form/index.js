@@ -118,7 +118,7 @@ export default function DrawerWrapExhibi() {
                                         message: 'Please input your password!'
                                     }
                                 ]}
-                                validateTrigger={['onInput', 'onClick']}
+                                validateTrigger={[]}
                             >
                                 <Input />
                             </AntForm.Item>
