@@ -163,21 +163,25 @@ export class Col extends Component {
 
     render() {
         const { screen, offset } = this.context
-        const { children, flex, style, [screen]: dynamicLayout } = this.props
+        const { children, flex, style, [screen]: dynamicLayout, className } = this.props
         const span = typeof dynamicLayout === 'number' ? dynamicLayout : dynamicLayout?.span || this.props.span
         const order = dynamicLayout?.order || this.props?.order
         const offsetX = dynamicLayout?.offset || this.props?.offset
         const push = dynamicLayout?.push || this.props?.push
         const pull = dynamicLayout?.pull || this.props?.pull
-        const colClass = classNames('col', {
-            [`col-${span}`]: span === 0 || span,
-            [`col-order-${order}`]: order,
-            [`col-offset-${offsetX}`]: offsetX,
-            [`col-push-${push}`]: push,
-            [`col-pull-${pull}`]: pull
-        })
+        const colClass = classNames(
+            'col',
+            {
+                [`col-${span}`]: span === 0 || span,
+                [`col-order-${order}`]: order,
+                [`col-offset-${offsetX}`]: offsetX,
+                [`col-push-${push}`]: push,
+                [`col-pull-${pull}`]: pull
+            },
+            className
+        )
         return (
-            <div className={colClass} style={{ ...style, padding: `0 ${offset[0] / 2}px`, flex }}>
+            <div className={colClass} style={{ ...style, padding: `0 ${offset[0] / 2}px`, flex: flex }}>
                 {children}
                 {/* {screen} */}
             </div>

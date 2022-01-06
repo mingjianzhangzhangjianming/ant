@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
-import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 import PageLayout from 'pages/layout'
 import Switch from 'pages/view/Switch'
 import Drawer from 'pages/view/Drawer'
 import Form from 'pages/view/Form'
+import Hook from './demo/hook'
 
 const theme = {
     default: {
@@ -16,6 +17,7 @@ const theme = {
 
 function Tit() {
     const history = useNavigate()
+    console.log(useLocation())
     return (
         <>
             <h4 style={{ width: '100%', height: 900 }}>react-route-dom 6.1</h4>
@@ -33,6 +35,7 @@ export default function App() {
                         <Route path="switch" element={<Switch />} />
                         <Route path="drawer" element={<Drawer />} />
                         <Route path="form" element={<Form />} />
+                        <Route path="hook" element={<Hook />} />
                     </Route>
                 </Routes>
             </HashRouter>

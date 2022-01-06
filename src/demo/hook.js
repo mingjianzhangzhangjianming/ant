@@ -109,6 +109,8 @@ const Hook = () => {
     let num = 0
     const [count, setCount] = useState(100)
     const [delay, setDelay] = useState(500)
+    const [val, setVal] = useState(1)
+    const valRef = useRef(null)
     const countRef = useRef(0)
     const handleClick = () => {
         setCount(c => c + 1)
@@ -152,7 +154,7 @@ const Hook = () => {
     // })
 
     useEffect(() => {
-        const a=12
+        const a = 12
         textRef.current.console()
         console.log(textRef)
     }, [])
@@ -161,7 +163,7 @@ const Hook = () => {
             {/* <A /> */}
             {/* <Input value={count} style={{ width: 240, marginBottom: 24 }} /> */}
             <br />
-            {count}``
+            {count}
             <StyleTheme1.Provider value={{ fontsize: 16 }}>
                 <HookChildren2 ref={textRef} />
             </StyleTheme1.Provider>
@@ -192,6 +194,36 @@ const Hook = () => {
             />
             <br />
             <Button style={{ margin: 36 }} type="primary" children="setInterval stop" onClick={() => setCount(0)} />
+            <hr />
+            <Button
+                onClick={() => {
+                    setVal(v => {
+                        valRef.current = v + 1
+                        return v + 1
+                    })
+                }}
+            >
+                alert{val}
+            </Button>
+            <Button
+                style={{ margin: '0 24px' }}
+                onClick={() => {
+                    setTimeout(() => {
+                        alert(valRef.current)
+                    }, 3000)
+                }}
+            >
+                alert valRef
+            </Button>
+            <Button
+                onClick={() => {
+                    setTimeout(() => {
+                        alert(val)
+                    }, 3000)
+                }}
+            >
+                alert val
+            </Button>
         </StyleTheme.Provider>
     )
 }

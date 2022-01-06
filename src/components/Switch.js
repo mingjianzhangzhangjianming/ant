@@ -194,7 +194,8 @@ export default class Switch extends Component {
         size: PropTypes.oneOf(['small', 'default']),
         unCheckedChildren: PropTypes.element,
         onChange: PropTypes.func,
-        onClick: PropTypes.func
+        onClick: PropTypes.func,
+        checked: PropTypes.bool
     }
 
     static defaultProps = {
@@ -222,15 +223,15 @@ export default class Switch extends Component {
         const { onClick, onChange } = this.props
         this.setState(
             prevState => ({
-                isChecked: typeof this.props.checked === 'undefined' ? !prevState.isChecked : prevState.isChecked
+                isChecked: !prevState.isChecked
             }),
             () => {
-                if (onChange && typeof onChange === 'function') {
+                if (typeof onChange === 'function') {
                     onChange(this.state.isChecked, e)
                 }
             }
         )
-        if (onClick && typeof onClick === 'function') {
+        if (typeof onClick === 'function') {
             onChange(this.state.isChecked, e)
         }
     }

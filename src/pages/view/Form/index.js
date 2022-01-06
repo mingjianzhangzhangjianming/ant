@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { Typography, Row, Col } from 'antd'
 import './index.less'
 import AntForm from 'components/Form'
-import { Form, Button, Input, Checkbox, Switch } from 'antd'
+import { Form, Button, Input, Checkbox } from 'antd'
+import Switch from 'components/Switch'
 
 const Demo = () => {
     const onFinish = values => {
@@ -77,6 +78,7 @@ const Demo = () => {
 }
 
 export default function DrawerWrapExhibi() {
+    const [layout, setLayout] = useState(false)
     return (
         <div className="switch-container">
             <Typography.Title level={3}>Form 表单</Typography.Title>
@@ -99,67 +101,61 @@ export default function DrawerWrapExhibi() {
                 <Row gutter={24}>
                     <Col lg={{ span: 24 }} md={{ span: 24 }}>
                         <Demo />
-                        <AntForm>
+                        <Switch
+                            style={{ margin: '24px 0' }}
+                            checked={layout}
+                            onChange={e => setLayout(e)}
+                            checkedChildren="vertical"
+                            unCheckedChildren="horizontal"
+                        />
+                        <AntForm
+                            layout={layout ? 'horizontal' : 'vertical'}
+                            labelCol={{
+                                span: 8
+                            }}
+                            wrapperCol={{
+                                span: 16
+                            }}
+                        >
                             <AntForm.Item
                                 name="username"
                                 valuePropName="value"
                                 label="username"
                                 initialValue={999}
-                                labelCol={{
-                                    offset: 3,
-                                    span: 5
-                                }}
-                                wrapperCol={{
-                                    span: 16
-                                }}
+                                validateTrigger={['onBlur']}
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Please input your password!'
+                                        message: 'Please input your username!'
                                     }
                                 ]}
-                                validateTrigger={[]}
                             >
                                 <Input />
                             </AntForm.Item>
                             <AntForm.Item
                                 name="tenant"
-                                initialValue={888}
+                                initialValue={876354634653485453}
                                 valuePropName="value"
                                 label="username"
-                                labelCol={{
-                                    offset: 3,
-                                    span: 5
-                                }}
-                                wrapperCol={{
-                                    span: 16
-                                }}
                                 rules={[
                                     {
                                         required: true,
                                         message: 'Please input your password!'
                                     },
                                     {
-                                        max: 10,
-                                        message: '最长不能超过十个字符!'
+                                        message: '最长不能超过十个字符!',
+                                        max: 10
+                                    },
+                                    {
+                                        min: 5,
+                                        message: '最少5个字符!'
                                     }
                                 ]}
+                                validateTrigger={['onChange']}
                             >
                                 <Input />
                             </AntForm.Item>
-                            <AntForm.Item
-                                labelCol={{
-                                    offset: 3,
-                                    span: 5
-                                }}
-                                wrapperCol={{
-                                    offset: 8,
-                                    span: 16
-                                }}
-                                label="Password"
-                                name="password"
-                                valuePropName="checked"
-                            >
+                            <AntForm.Item label="Password" name="password" valuePropName="checked">
                                 <Switch />
                             </AntForm.Item>
                             <AntForm.Item

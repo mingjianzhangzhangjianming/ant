@@ -27,20 +27,23 @@ const eventType = {
 
 const handleRule = {
     required: val => val === '',
-    max: (val, maxLength) => val.length >= maxLength
+    max: maxLength => val => val.toString().length >= maxLength,
+    min: minLength => val => val.toString().length <= minLength
 }
 
 const FormItem = memo(props => {
+    const valRef = useRef(null)
+    const [errorMsg, setErrorMsg] = useState('')
     const [hasError, setHasError] = useState(false)
     const errRef = useRef(null)
-    //触发验证标识
-    const [isTrigger, setTrigger] = useState(false)
     //结束动画执行标识
     const [isAnimaing, setIsAnimaing] = useState(false)
     const [formItemvalid, setFormItemvalid] = useState({})
     const {
+        colon,
         label,
         labelCol,
+        labelAlign,
         wrapperCol,
         requiredMark,
         children,
@@ -56,32 +59,60 @@ const FormItem = memo(props => {
         'ant-form-item-has-error': hasError
     })
 
+    const labelClassName = classNames({
+        'ant-form-item-required': requiredMark,
+        [`ant-form-item-label-${labelAlign}`]: labelAlign,
+        'lable-colon': colon
+    })
+
     //表单验证触发事件
-    const dispatChvalis = (vaild, fn) => {
-        const Fn = isTrigger ? () => {} : fn
-        if (!isTrigger) {
-            setTrigger(true)
+    const dispatChvalis = (vaild, Fn) => {
+        const mergeonChange = e => {
+            dispatchFormValue(e)
+            Fn()
         }
         return new Promise(resolve => {
-            resolve(Object.assign({}, ...(Array.isArray(vaild) ? vaild.map(i => ({ [i]: Fn })) : [{ [vaild]: Fn }])))
+            resolve(
+                Object.assign(
+                    {},
+                    ...(Array.isArray(vaild)
+                        ? vaild.map(i => ({
+                              [i]: i === 'onChange' ? mergeonChange : Fn
+                          }))
+                        : [
+                              {
+                                  [vaild]: vaild === 'onChange' ? mergeonChange : Fn
+                              }
+                          ])
+                )
+            )
         })
     }
 
     useEffect(() => {
-        console.log('validList>>>>>>', validList)
-
         const [val] = Object.values(elProps)
-        // console.log(val, 'elProps')
-        const triggerVaildEvent = v => {
-            const result = rulelist?.some(rule => {
-                const [fn, msg] = rule
-                console.log(v, fn)
-                return fn(v)
-            })
-            setHasError(result)
-        }
+        valRef.current = val
+        const Fn = () => {
+            setTimeout(() => {
+                console.log(elProps, valRef, 'elProps 1996', rulelist)
+                const result = rulelist?.some(rule => {
+                    const [fn, msg] = rule
+                    if (!fn) {
+                        return false
+                    }
+                    // const ruleIsError = fn(valRef.current)
+                    // if (ruleIsError) {
+                    //     setErrorMsg(msg)
+                    // }
+                    // return ruleIsError
 
-        dispatChvalis(validList, triggerVaildEvent(val)).then(res => {
+                    return fn(valRef.current) && !setErrorMsg(msg)
+                })
+
+                setHasError(result)
+            })
+        }
+        dispatChvalis(validList, Fn).then(res => {
             setFormItemvalid(res)
         })
     }, [elProps])
@@ -96,10 +127,10 @@ const FormItem = memo(props => {
 
     // console.log((hasError || isAnimaing) && 'render')
     return (
-        <Row className={rowClass} gutter={24}>
+        <Row className={rowClass}>
             {label && (
-                <Col {...labelCol}>
-                    <label className={classNames({ 'ant-form-item-required': requiredMark })}>{label}</label>
+                <Col className="label-control" {...labelCol}>
+                    <label className={labelClassName}>{label}</label>
                 </Col>
             )}
             <Col {...wrapperCol}>
@@ -116,7 +147,7 @@ const FormItem = memo(props => {
                         className={`ant-form-item-${hasError ? 'show' : 'hiddens'} ant-form-item-explain-connected`}
                     >
                         <div role="alert" className="ant-form-item-explain-error">
-                            Please input your username!
+                            {errorMsg}
                         </div>
                     </div>
                 )}
@@ -133,10 +164,22 @@ const FormItemWarp = props => {
         labelCol: contextLabelCol,
         wrapperCol: contextWrapperCol,
         initialValues,
-        validateTrigger: contextValidateTrigger
+        validateTrigger: contextValidateTrigger,
+        labelAlign: contextLabelAlign,
+        colon: contextColon
     } = useContext(FormContext)
-    const { name, children, valuePropName, label, dispatchforminitialvalues, initialValue, validateTrigger, rules } =
-        props
+    const {
+        name,
+        children,
+        valuePropName,
+        label,
+        labelAlign,
+        dispatchforminitialvalues,
+        initialValue,
+        validateTrigger,
+        rules,
+        colon
+    } = props
     const [labelCol, wrapperCol] = [props.labelCol || contextLabelCol, props.wrapperCol || contextWrapperCol]
     const dispatchFormValue = useCallback(
         value =>
@@ -169,8 +212,23 @@ const FormItemWarp = props => {
 
     //验证列表
     const rulelist = rules?.map(rule => {
-        const [fnName, msg] = Object.keys(rule)
-        return [handleRule?.[fnName], rule?.[msg]]
+        const { message, ...otherRule } = rule
+        const [fnName] = Object.keys(otherRule)
+        // console.log(rule, fnName)
+        switch (fnName) {
+            case 'required': {
+                if (rule[fnName]) return [handleRule?.[fnName], message]
+            }
+            case 'max':
+                return [handleRule?.[fnName](rule[fnName]), message]
+
+            case 'min':
+                return [handleRule?.[fnName](rule[fnName]), message]
+
+            default:
+                return [handleRule?.[fnName], message]
+        }
+        console.log(message, fnName)
     })
     // console.log(rulelist, 'rulelist')
     //注入触发时机
@@ -184,7 +242,9 @@ const FormItemWarp = props => {
         wrapperCol,
         elProps,
         validList,
-        rulelist
+        rulelist,
+        labelAlign: labelAlign || contextLabelAlign,
+        colon: colon || contextColon
     }
 
     return (
@@ -207,7 +267,6 @@ FormItemWarp.defaultProps = {
     // hidden	是否隐藏字段（依然会收集和校验字段）	boolean	false	4.4.0
     // htmlFor	设置子元素 label htmlFor 属性	string	-
     // initialValue	设置子元素默认值，如果与 Form 的 initialValues 冲突则以 Form 为准	string	-	4.2.0
-    // labelAlign	标签文本对齐方式	left | right	right
     // labelCol	label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}。你可以通过 Form 的 labelCol 进行统一设置，，不会作用于嵌套 Item。当和 Form 同时设置时，以 Item 为准	object	-
     // messageVariables	默认验证字段的信息	Record<string, string>	-	4.7.0
     // name	字段名，支持数组	NamePath	-
@@ -336,8 +395,7 @@ export default class Form extends Component {
         const formClassName = classNames(
             'ant-form',
             { [`ant-form-${size}`]: size !== 'middle' },
-            { [`ant-form-${layout}`]: layout },
-            { 'ant-form-item-label-left': labelAlign }
+            { [`ant-form-${layout}`]: layout }
         )
         // console.log(this.props)
         return (
